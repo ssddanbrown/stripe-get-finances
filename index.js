@@ -69,7 +69,7 @@ function penceToMoney(pence) {
 
 async function transactionToLineItems(transaction) {
     const items = [];
-    const date = (new Date(transaction.created * 1000)).toISOString().split('T')[0];
+    let date = (new Date(transaction.created * 1000)).toISOString().split('T')[0];
     let description = `${transaction.description} [${transaction.id}]`;
 
     if (transaction.type === 'charge') {
@@ -80,6 +80,8 @@ async function transactionToLineItems(transaction) {
     } else if  (transaction.type === 'stripe_fee') {
         // Reverse fee values, so we can import them alongside transaction fees.
         transaction.amount = -(transaction.amount)
+    } else if (transaction.type === 'payout') {
+        date = (new Date(transaction.source.arrival_date * 1000)).toISOString().split('T')[0];
     }
 
     items.push({
