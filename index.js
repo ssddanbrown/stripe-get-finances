@@ -74,9 +74,10 @@ async function transactionToLineItems(transaction) {
 
     if (transaction.type === 'charge') {
         const customerName = [
-            transaction.source.customer.name, transaction.source.customer.email
+            transaction.source?.customer?.name || transaction.source.billing_details.name,
+            transaction.source?.customer?.email || transaction.source.billing_details.email,
         ].filter(Boolean).join(' / ');
-        description = `${transaction.description} [${transaction.source.invoice} - ${customerName}]`;
+        description = `${transaction.description} [${transaction.source.invoice || 'no_invoice'} - ${customerName}]`;
     } else if  (transaction.type === 'stripe_fee') {
         // Reverse fee values, so we can import them alongside transaction fees.
         transaction.amount = -(transaction.amount)
